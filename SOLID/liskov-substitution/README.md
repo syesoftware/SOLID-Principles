@@ -1,0 +1,3 @@
+## Liskov substitution principle
+
+*Description*

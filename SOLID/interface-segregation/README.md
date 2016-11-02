@@ -1,0 +1,3 @@
+## Interface segregation principle
+
+*Description*
