@@ -7,22 +7,18 @@ achieved through the use of patterns such as the strategy pattern. Let’s look 
 code that is violating the Open/Closed Principle:
 
 ```ruby
-class UsageFileParser
-  def initialize(client, usage_file)
-    @client = client
-    @usage_file = usage_file
+class FileParser
+  def initialize(format)
+    @format = format
   end
 
   def parse
-    case @client.usage_file_format
+    case @format
       when :xml
         parse_xml
       when :csv
         parse_csv
     end
-
-    @client.last_parse = Time.now
-    @client.save!
   end
 
   private
@@ -42,33 +38,31 @@ reports usage information to us in a different file format. This violates the Op
 Let’s take a look at how we might modify this code to make it open to extension:
 
 ```ruby
-class UsageFileParser
-  def initialize(client, parser)
-    @client = client
+class FileParser
+  def initialize(parser)
     @parser = parser
   end
 
-  def parse(usage_file)
-    parser.parse(usage_file)
-    @client.last_parse = Time.now
-    @client.save!
+  def parse(file)
+    parser.parse(file)
+    # Common parse actions.
   end
 end
 
 class XmlParser
-  def parse(usage_file)
+  def parse(file)
     # Parse xml.
   end
 end
 
 class CsvParser
-  def parse(usage_file)
+  def parse(file)
     # Parse csv.
   end
 end
 ```
 
 With this refactor we’ve made it possible to add new parsers without changing any code. Any additional
-behavior will only require the addition of a new handler. This makes our UsageFileParser reusable and
+behavior will only require the addition of a new handler. This makes our FileParser reusable and
 in many cases will keep us in compliance with the Single Responsibility Principle as well by encouraging
 us to create smaller more focused classes.
